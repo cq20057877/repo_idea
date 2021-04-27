@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lagou.dao.UserMapper">
+
+    <!--用户分页和多条件查询-->
+    <select id="findAllUserByPage" parameterType="com.lagou.domain.UserVO" resultType="com.lagou.domain.User">
+        select * from user
+        <where>
+            <if test="true">
+                and is_del != 1
+            </if>
+            <if test="username != null and username != ''">
+                and name = #{username}
+            </if>
+            <if test="startCreateTime != null and endCreateTime != null">
+                and create_time between #{startCreateTime} and #{endCreateTime}
+            </if>
+        </where>
+    </select>
+
+    <!--用户状态设置-->
+    <update id="updateUserStatus" parameterType="com.lagou.domain.User">
+        update user set status = #{status} , update_time = #{update_time} where id = #{id}
+    </update>
+
+    <select id="login" parameterType="com.lagou.domain.User" resultType="com.lagou.domain.User">
+        select * from user where phone = #{phone}
+    </select>
+
+    <select id="findUserRoleById" parameterType="java.lang.Integer" resultType="com.lagou.domain.Role">
+        SELECT r.* FROM roles r , user_role_relation urr WHERE urr.role_id = r.id AND urr.user_id = #{id}
+    </select>
+
+    <delete id="deleteUserRoleRelationByUserId" parameterType="java.lang.Integer">
+        delete from user_role_relation where user_id = #{userId}
+    </delete>
+
+    <insert id="userContextRole" parameterType="com.lagou.domain.User_Role_relation">
+        insert into user_role_relation values(null , #{userId} , #{roleId}, #{createdTime}, #{updatedTime}, #{createdBy}, #{updatedBy})
+    </insert>
+
+    <select id="findParentMenuByRoleId" parameterType="java.util.List" resultType="com.lagou.domain.Menu">
+        SELECT DISTINCT m.* FROM role_menu_relation rmr , menu m WHERE rmr.menu_id = m.id AND m.parent_id = -1 AND rmr.role_id IN 
+        <foreach collection="list" open="(" close=")" separator="," item="roleId">
+            #{roleId}
+        </foreach>
+    </select>
+
+    <select id="findSubMenuByParentId" parameterType="java.lang.Integer" resultType="com.lagou.domain.Menu">
+        SELECT * FROM menu WHERE parent_id = #{parentId}
+    </select>
+
+    <select id="findResourceByRoleId" parameterType="java.util.List" resultType="com.lagou.domain.Resource">
+        SELECT DISTINCT r.* FROM resource r , role_resource_relation rrr WHERE rrr.resource_id = r.id AND rrr.role_id IN
+        <foreach collection="list" item="roleIds" open="(" separator="," close=")">
+            #{roleIds}
+        </foreach>
+    </select>
+</mapper>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lagou.dao.RoleMapper">
+
+    <select id="findAllRole" parameterType="com.lagou.domain.Role" resultType="com.lagou.domain.Role">
+        select * from roles 
+        <where>
+            <if test="name != null and name != ''">
+                 and name like concat('%',#{name},'%')
+            </if>
+        </where>
+    </select>
+
+    <!--新增-->
+    <insert id="saveRole" parameterType="com.lagou.domain.Role">
+        insert into roles values(null , #{code} , #{name} , #{description}, #{createdTime}, #{updatedTime}, #{createdBy}, #{updatedBy})
+    </insert>
+
+    <update id="updateRole" parameterType="com.lagou.domain.Role">
+        UPDATE roles
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="code != null and code != ''">
+                code = #{code},
+            </if>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="description != null and description != ''">
+                description = #{description},
+            </if>
+            <if test="updatedTime != null">
+                updated_time = #{updatedTime},
+            </if>
+            <if test="updatedBy != null and updatedBy != ''">
+                updated_by = #{updatedBy},
+            </if>
+        </trim>
+        <where>
+            <if test="id!=null and id != '' ">
+                id = #{id}
+            </if>
+        </where>
+    </update>
+
+    <delete id="deleteMenuRelationByRoleId" parameterType="java.lang.Integer">
+        DELETE FROM role_menu_relation WHERE role_id = #{roleId}
+    </delete>
+
+    <insert id="saveMenuRelationByMenuId" parameterType="com.lagou.domain.Role_menu_relation">
+        INSERT INTO role_menu_relation VALUES(NULL , #{menuId} , #{roleId} , #{createdTime} ,#{updatedTime},#{createdBy},#{updatedBy})
+    </insert>
+
+    <delete id="deleteRole" parameterType="java.lang.Integer">
+        delete from roles where id = #{id}
+    </delete>
+
+    <!--字母菜单查询-->
+    <!--父级菜单调用此方法-->
+    <resultMap id="findAllMenuMapper" type="com.lagou.domain.Menu">
+        <id property="id" column="id"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="href" column="href"/>
+        <result property="icon" column="icon"/>
+        <result property="name" column="name"/>
+        <result property="description" column="description"/>
+        <result property="orderNum" column="order_num"/>
+        <result property="shown" column="shown"/>
+        <result property="level" column="level"/>
+        <result property="createdTime" column="created_time"/>
+        <result property="updatedTime" column="updated_time"/>
+        <result property="createdBy" column="created_by"/>
+        <result property="updatedBy" column="updated_by"/>
+
+        <collection property="subMenuList" select="com.lagou.dao.RoleMapper.findAllMenu" ofType="com.lagou.domain.Menu" column="id">
+            <id property="id" column="id"/>
+            <result property="parentId" column="parent_id"/>
+            <result property="href" column="href"/>
+            <result property="icon" column="icon"/>
+            <result property="name" column="name"/>
+            <result property="description" column="description"/>
+            <result property="orderNum" column="order_num"/>
+            <result property="shown" column="shown"/>
+            <result property="level" column="level"/>
+            <result property="createdTime" column="created_time"/>
+            <result property="updatedTime" column="updated_time"/>
+            <result property="createdBy" column="created_by"/>
+            <result property="updatedBy" column="updated_by"/>
+        </collection>
+    </resultMap>
+
+    <select id="findAllMenu" parameterType="java.lang.Integer" resultMap="findAllMenuMapper">
+      SELECT * FROM menu WHERE parent_id = #{id}
+    </select>
+</mapper>

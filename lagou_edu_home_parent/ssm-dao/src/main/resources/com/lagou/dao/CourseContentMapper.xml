@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lagou.dao.CourseContentMapper">
+
+    <!--查询课程对应章节和课时信息的resultMap-->
+    <resultMap id="findSectionAndLessonMapper" type="com.lagou.domain.CourseSection">
+        <id property="id" column="id"/>
+        <result property="courseId" column="course_id"/>
+        <result property="sectionName" column="section_name"/>
+        <result property="description" column="description"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="isDe" column="is_de"/>
+        <result property="orderNum" column="order_num"/>
+        <result property="status" column="status"/>
+
+        <collection property="lessonList" ofType="com.lagou.domain.CourseLesson">
+            <id property="id" column="lesson_id"/>
+            <result property="courseId" column="cl_course_id"/>
+            <result property="sectionId" column="cl_section_id"/>
+            <result property="theme" column="cl_theme"/>
+            <result property="duration" column="cl_duration"/>
+            <result property="isFree" column="cl_is_free"/>
+            <result property="createTime" column="cl_create_time"/>
+            <result property="updateTime" column="cl_update_time"/>
+            <result property="isDel" column="cl_is_del"/>
+            <result property="orderNum" column="cl_order_num"/>
+            <result property="status" column="cl_status"/>
+        </collection>
+    </resultMap>
+
+    <!--根据课程id查询课程对应章节和课时信息-->
+    <select id="findSectionAndLessonByCourseId" parameterType="java.lang.Integer"
+            resultMap="findSectionAndLessonMapper">
+    SELECT
+        cs.*,
+        cl.id lesson_id,
+        cl.course_id cl_course_id,
+        cl.section_id cl_section_id,
+        cl.theme cl_theme,
+        cl.duration cl_duration,
+        cl.is_free cl_is_free,
+        cl.create_time cl_create_time,
+        cl.update_time cl_update_time,
+        cl.is_del cl_is_del,
+        cl.order_num cl_order_num,
+        cl.status cl_status
+    FROM
+        course_section cs
+        LEFT JOIN course_lesson cl
+            ON cs.id = cl.section_id
+    WHERE cs.course_id = #{courseId}
+    ORDER BY cs.order_num
+    </select>
+
+
+    <select id="findCourseByCourseId" parameterType="java.lang.Integer" resultType="com.lagou.domain.Course">
+        select id , course_name from course where id = #{id}
+    </select>
+
+    <insert id="saveSection" parameterType="com.lagou.domain.CourseSection">
+        INSERT INTO course_section(
+        course_id,
+        section_name,
+        description,
+        order_num,
+        STATUS,
+        create_time,
+        update_time
+        )VALUES(#{courseId},#{sectionName},#{description},#{orderNum},#{status},#{createTime},#{updateTime})
+    </insert>
+
+    <update id="updateSection" parameterType="com.lagou.domain.CourseSection">
+        UPDATE course_section
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="sectionName != null and sectionName != ''">
+                section_name = #{sectionName},
+            </if>
+            <if test="description != null and description != ''">
+                description = #{description},
+            </if>
+            <if test="orderNum != null and orderNum != '' or orderNum == 0">
+                order_num = #{orderNum},
+            </if>
+            <if test="updateTime != null">
+                update_time=#{updateTime}
+            </if>
+        </trim>
+        <where>
+        <if test="id != null and id != '' ">id = #{id}</if>
+        </where>
+    </update>
+
+    <update id="updateSectionStatus" parameterType="com.lagou.domain.CourseSection">
+        UPDATE course_section set
+            status = #{status},
+            update_time = #{updateTime}
+        WHERE id = #{id}
+    </update>
+
+    <insert id="saveLesson" parameterType="com.lagou.domain.CourseLesson">
+        INSERT INTO course_lesson(
+        course_id,
+        section_id,
+        theme,
+        duration,
+        is_free,
+        create_time,
+        update_time,
+        is_del,
+        order_num,
+        status
+        )VALUES(#{courseId},#{sectionId},#{theme},#{duration},#{isFree},#{createTime},#{updateTime} , #{isDel}, #{orderNum}, #{status})
+    </insert>
+</mapper>
