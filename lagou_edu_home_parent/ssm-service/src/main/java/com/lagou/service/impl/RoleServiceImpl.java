@@ -7,8 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 @Transactional
@@ -89,4 +88,59 @@ public class RoleServiceImpl implements RoleService {
         return roleMapper.findAllMenu(-1);
     }
 
+    @Override
+    public List<ResourceCategory> findResourceListByRoleId(Integer roleId) {
+        //根据roleId去重查出此角色关联的所有resource信息
+        List<Resource> resourceList = roleMapper.findAllResource(roleId);
+
+        //将resourceList的categoryId取出 , 去重放到集合中 , 利用set集合不可重复的特性
+        Set<Integer> set = new HashSet<>();
+        for (Resource resource : resourceList) {
+            set.add(resource.getCategoryId());
+        }
+
+        //将封装好的categoryId遍历 , 依次获得ResourceCategory对象 , 封装到list
+        List<ResourceCategory> categoryList = new ArrayList<>();
+        for (Integer categoryId : set) {
+            ResourceCategory resourceCategory = roleMapper.findCategoryByCategoryId(categoryId);
+            categoryList.add(resourceCategory);
+        }
+
+        //将装满了ResourceCategory的集合遍历 , 如果resourceList中的CategoryId与ResourceCategory的id相同就放到一个集合
+        for (ResourceCategory resourceCategory : categoryList) {
+            for (Resource resource : resourceList) {
+                if (resource.getCategoryId().equals(resourceCategory.getId())){
+                    resourceCategory.getResourceList().add(resource);
+                }
+            }
+        }
+        return categoryList;
+    }
+
+    /**
+     * 为角色保存资源信息
+     * 先清空 , 再重新保存
+     *
+     * @param roleResourseVO
+     */
+    @Override
+    public void roleContextResource(RoleResourseVO roleResourseVO) {
+        //清空中间表所有关联此角色Id的关系
+        roleMapper.deleteRoleRelationResourceByRoleId(roleResourseVO.getRoleId());
+
+        //依次将封装类中的Id集合添加 , 需要new一个中间表对象作为封装载体
+        Date date = new Date();
+        for (Integer resourceId : roleResourseVO.getResourceIdList()) {
+            RoleResourceRelation roleResourceRelation = new RoleResourceRelation();
+            roleResourceRelation.setResourceId(resourceId);
+            roleResourceRelation.setRoleId(roleResourseVO.getRoleId());
+            roleResourceRelation.setCreatedTime(date);
+            roleResourceRelation.setUpdatedTime(date);
+
+            roleResourceRelation.setCreatedBy("test");
+            roleResourceRelation.setUpdatedBy("test");
+
+            roleMapper.roleContextResource(roleResourceRelation);
+        }
+    }
 }

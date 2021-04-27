@@ -10,4 +10,14 @@ public interface ResourceCategoryService {
      * @return
      */
     List<ResourceCategory> findAllResourceCategory();
+
+    void saveResourceCategory(ResourceCategory resourceCategory);
+
+    void updateResourceCategory(ResourceCategory resourceCategory);
+
+    /**
+     * 删除
+     * @param id
+     */
+    void deleteResourceCategory(Integer id);
 }

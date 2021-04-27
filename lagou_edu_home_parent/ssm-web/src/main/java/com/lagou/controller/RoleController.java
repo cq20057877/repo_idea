@@ -69,4 +69,25 @@ public class RoleController {
         roleService.deleteRole(id);
         return new ResponseResult(true , 200 , "响应成功" , null);
     }
+
+    /**
+     * 获取当前角色拥有的资源信息
+     * @param roleId
+     * @return
+     */
+    @RequestMapping("/findResourceListByRoleId")
+    public ResponseResult findResourceListByRoleId(Integer roleId){
+        List<ResourceCategory> resourceCategoryList = roleService.findResourceListByRoleId(roleId);
+        return new ResponseResult(true , 200 , "响应成功" , resourceCategoryList);
+    }
+
+    /**
+     * 为角色分配资源(多对多)
+     * @return
+     */
+    @RequestMapping("/roleContextResource")
+    public ResponseResult roleContextResource(@RequestBody RoleResourseVO roleResourseVO){
+        roleService.roleContextResource(roleResourseVO);
+        return new ResponseResult(true , 200 , "响应成功" , null);
+    }
 }

@@ -6,4 +6,31 @@
     <select id="findAllResourceCategory" resultType="com.lagou.domain.ResourceCategory">
         select * from resource_category
     </select>
+
+    <insert id="saveResourceCategory" parameterType="com.lagou.domain.ResourceCategory">
+        insert into resource_category values(null , #{name}, #{sort}, #{createdTime}, #{updatedTime}, #{createdBy}, #{updatedBy})
+    </insert>
+
+    <update id="updateResourceCategory" parameterType="com.lagou.domain.ResourceCategory">
+        update resource_category
+        <set>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="sort != null">
+                sort = #{sort},
+            </if>
+            <if test="updatedTime != null">
+                updated_time = #{updatedTime},
+            </if>
+            <if test="updatedBy != null and updatedBy != ''">
+                updated_by = #{updatedBy},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteResourceCategory" parameterType="java.lang.Integer">
+        delete from resource_category where id = #{id}
+    </delete>
 </mapper>

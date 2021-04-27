@@ -92,4 +92,20 @@
     <select id="findAllMenu" parameterType="java.lang.Integer" resultMap="findAllMenuMapper">
       SELECT * FROM menu WHERE parent_id = #{id}
     </select>
+
+    <select id="findAllResource" parameterType="java.lang.Integer" resultType="com.lagou.domain.Resource">
+        SELECT DISTINCT r.* FROM role_resource_relation rrr , resource r WHERE r.`id` = rrr.`resource_id` AND rrr.role_id = #{roleId}
+    </select>
+
+    <select id="findCategoryByCategoryId" parameterType="java.lang.Integer" resultType="com.lagou.domain.ResourceCategory">
+        SELECT * FROM resource_category WHERE id = #{categoryId}
+    </select>
+
+    <delete id="deleteRoleRelationResourceByRoleId" parameterType="java.lang.Integer">
+        delete from role_resource_relation where role_id = #{roleId}
+    </delete>
+
+    <insert id="roleContextResource" parameterType="com.lagou.domain.RoleResourceRelation">
+        insert into role_resource_relation values(null , #{resourceId}, #{roleId}, #{createdTime}, #{updatedTime}, #{createdBy}, #{updatedBy})
+    </insert>
 </mapper>
