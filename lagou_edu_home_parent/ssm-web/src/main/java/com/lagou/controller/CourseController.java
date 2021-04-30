@@ -28,8 +28,9 @@ public class CourseController {
     @Autowired
     private CourseService courseService;
 
-    @RequestMapping("/findCourseByCondition")
+    @RequestMapping("/findAllCourse")
     public ResponseResult findCourseByCondition(@RequestBody CourseVO courseVO){
+        // System.out.println(courseVO.getStatus());
         List<Course> courseList = courseService.findCourseByCondition(courseVO);
 
         //Boolean success, Integer state, String message, Object content

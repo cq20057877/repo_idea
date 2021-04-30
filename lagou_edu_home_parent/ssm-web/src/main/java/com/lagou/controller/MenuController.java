@@ -32,7 +32,7 @@ public class MenuController {
     public ResponseResult findAllMenu(MenuVo menuVo){
 
         PageInfo<Menu> menuPageInfo = menuService.findAllMenu(menuVo);
-        return new ResponseResult(true , 200 , "响应成功" , menuPageInfo.getList());
+        return new ResponseResult(true , 200 , "响应成功" , menuPageInfo);
     }
 
     /**
@@ -47,6 +47,8 @@ public class MenuController {
         if (id != -1){
             //修改
             map.put("menuInfo" , menuService.findMenuInfoById(id));
+        }else {
+            map.put("menuInfo" , null);
         }
         map.put("parentMenuList" , roleService.findAllMenu());
         return new ResponseResult(true , 200 , "响应成功" , map);

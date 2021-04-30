@@ -59,7 +59,7 @@ public class RoleController {
 
     @RequestMapping("/RoleContextMenu")
     public ResponseResult RoleContextMenu(@RequestBody RoleMenuVo roleMenuVo){
-
+        // System.out.println(roleMenuVo.getMenuIdList());
         roleService.RoleContextMenu(roleMenuVo);
         return new ResponseResult(true , 200 , "响应成功" , null);
     }

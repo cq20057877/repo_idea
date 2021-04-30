@@ -69,7 +69,7 @@ public class CourseContentController {
     /*
         新建课时信息
      */
-    @RequestMapping("/saveLesson")
+    @RequestMapping("/saveOrUpdateLesson")
     public ResponseResult saveLesson(@RequestBody CourseLesson courseLesson){
         courseContentService.saveLesson(courseLesson);
         return new ResponseResult(true , 200 , "响应成功" , null);
