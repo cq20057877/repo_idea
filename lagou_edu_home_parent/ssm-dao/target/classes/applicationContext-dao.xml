@@ -17,10 +17,10 @@ http://www.springframework.org/schema/aop/spring-aop.xsd">
     <!--数据源-->
     <context:property-placeholder location="classpath:jdbc.properties"/>
     <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
-        <property name="driverClassName" value="${jdbc.driver}"/>
-        <property name="url" value="${jdbc.url}"/>
-        <property name="username" value="${jdbc.username}"/>
-        <property name="password" value="${jdbc.password}"/>
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/ssm_lagou_edu?useSSL=false&amp;characterEncoding=UTF-8&amp;serverTimezone=GMT%2B8"/>
+        <property name="username" value="root"/>
+        <property name="password" value="123456"/>
     </bean>
 
     <!--sqlSessionFactory的创建权交给了spring 生产sqlSession-->

@@ -118,7 +118,5 @@ public class UserController {
             //验证不通过
             return new ResponseResult(false , 400 , "获取用户权限信息失败" , null);
         }
-
-
     }
 }
